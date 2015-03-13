@@ -9,22 +9,9 @@ import matplotlib.pyplot as plt
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-
-def classifyBayes(features_train, labels_train):
-    clf = GaussianNB()
-    clf.fit(features_train, labels_train)
-    return clf
-
-def classifySVM(features_train, labels_train):
-    clf = SVC(kernel="rbf", C=1000000.0)
-    # clf = SVC()
-    clf.fit(features_train, labels_train)
-    return clf
-
-def classifyDT(features_train, labels_train):
-    clf = DecisionTreeClassifier(min_samples_split=50)
-    clf.fit(features_train, labels_train)
-    return clf
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 
 def prettyPicture(clf, X_test, y_test, file_name):
     x_min = 0.0; x_max = 1.0
@@ -69,20 +56,50 @@ def getAccuracy(features_test, labels_test, clf, name):
     accuracy = clf.score(features_test, labels_test)
     print name + ": " + str(accuracy)
 
+def classifyBayes(features_train, labels_train, features_test, labels_test):
+    clf = GaussianNB()
+    clf.fit(features_train, labels_train)
+    prettyPicture(clf, features_test, labels_test, "bayes.png")
+    getAccuracy(features_test, labels_test, clf, "Bayes")
+
+def classifySVM(features_train, labels_train, features_test, labels_test):
+    clf = SVC(kernel="rbf", C=1000000.0)
+    clf.fit(features_train, labels_train)
+    prettyPicture(clf, features_test, labels_test, "svm.png")
+    getAccuracy(features_test, labels_test, clf, "svm")
+
+def classifyDT(features_train, labels_train, features_test, labels_test):
+    clf = DecisionTreeClassifier(min_samples_split=50)
+    clf.fit(features_train, labels_train)
+    prettyPicture(clf, features_test, labels_test, "dt.png")
+    getAccuracy(features_test, labels_test, clf, "dt")
+
+def classifyKNearest(features_train, labels_train, features_test, labels_test):
+    clf = KNeighborsClassifier(n_neighbors=20)
+    clf.fit(features_train, labels_train)
+    prettyPicture(clf, features_test, labels_test, "k-nearest.png")
+    getAccuracy(features_test, labels_test, clf, "k-nearest")
+
+def classifyRandomForest(features_train, labels_train, features_test, labels_test):
+    clf = RandomForestClassifier(min_samples_split=50, n_estimators=20)
+    clf.fit(features_train, labels_train)
+    prettyPicture(clf, features_test, labels_test, "forest.png")
+    getAccuracy(features_test, labels_test, clf, "forest")
+
+def classifyAdaBoost(features_train, labels_train, features_test, labels_test):
+    clf = AdaBoostClassifier(n_estimators=100)
+    clf.fit(features_train, labels_train)
+    prettyPicture(clf, features_test, labels_test, "adaboost.png")
+    getAccuracy(features_test, labels_test, clf, "adaboost")
 
 def main():
     features_train, labels_train, features_test, labels_test = makeTerrainData()
 
-    clfB = classifyBayes(features_train, labels_train)
-    prettyPicture(clfB, features_test, labels_test, "bayes.png")
-    getAccuracy(features_test, labels_test, clfB, "Bayes")
-
-    clfS = classifySVM(features_train, labels_train)
-    prettyPicture(clfS, features_test, labels_test, "svm.png")
-    getAccuracy(features_test, labels_test, clfS, "SVM")
-
-    clfD = classifyDT(features_train, labels_train)
-    prettyPicture(clfD, features_test, labels_test, "dt.png")
-    getAccuracy(features_test, labels_test, clfD, "DT")
+    classifyBayes(features_train, labels_train, features_test, labels_test)
+    classifySVM(features_train, labels_train, features_test, labels_test)
+    classifyDT(features_train, labels_train, features_test, labels_test)
+    classifyKNearest(features_train, labels_train, features_test, labels_test)
+    classifyRandomForest(features_train, labels_train, features_test, labels_test)
+    classifyAdaBoost(features_train, labels_train, features_test, labels_test)
 
 main()
